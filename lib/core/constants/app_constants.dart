@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class AppConstants {
   AppConstants._();
 
@@ -21,6 +23,20 @@ class AppConstants {
 
   // Phone
   static const String defaultCountryCode = '+91';
+
+  // Google OAuth — Web Client ID (same for both debug & release)
+  static const String googleWebClientId =
+      '199478054991-uq7c9rh0e14qmg64mbo3ilg2qogls2kv.apps.googleusercontent.com';
+
+  // Android Client ID — switches based on build mode
+  // Debug uses debug keystore SHA-1, Release uses production keystore SHA-1
+  static const String _googleAndroidClientIdDebug =
+      '199478054991-do11s6u18feosjshtr479f1s6i0avrri.apps.googleusercontent.com'; // ← paste debug client ID here
+  static const String _googleAndroidClientIdRelease =
+      '199478054991-shntj6t9ae36eg28ca5pqfvlmnslhj9u.apps.googleusercontent.com';
+
+  static String get googleAndroidClientId =>
+      kDebugMode ? _googleAndroidClientIdDebug : _googleAndroidClientIdRelease;
 
   // Routes
   static const String splashRoute = '/';
