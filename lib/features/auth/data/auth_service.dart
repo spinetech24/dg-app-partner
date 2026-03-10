@@ -10,18 +10,48 @@ class AuthService {
   // ─── Phone / OTP ──────────────────────────────────────────────────────────
 
   Future<void> sendOtp(String phoneNumber) async {
-    await _client.auth.signInWithOtp(phone: phoneNumber);
+    final response = await _client.functions.invoke(
+      'request-mobile-otp',
+      body: {'mobile_number': phoneNumber},
+    );
+    if (response.status != 200) {
+      final message = response.data?['error'] ?? 'Failed to send OTP';
+      throw Exception(message);
+    }
   }
 
   Future<AuthResponse> verifyOtp({
     required String phoneNumber,
     required String token,
   }) async {
-    return _client.auth.verifyOTP(
-      phone: phoneNumber,
-      token: token,
-      type: OtpType.sms,
+    final response = await _client.functions.invoke(
+      'verify-mobile-otp',
+      body: {
+        'mobile_number': phoneNumber,
+        'otp': token,
+      },
     );
+
+    // Debug — remove after fixing
+    print('🔍 verify-mobile-otp status: ${response.status}');
+    print('🔍 verify-mobile-otp data: ${response.data}');
+
+    if (response.status != 200) {
+      final message = response.data?['error'] ?? 'Invalid OTP';
+      throw Exception(message);
+    }
+    final data = response.data as Map<String, dynamic>;
+    final accessToken = data['access_token'] as String?;
+    final refreshToken = data['refresh_token'] as String?;
+
+    print('🔍 access_token: $accessToken');
+    print('🔍 refresh_token: $refreshToken');
+
+    if (accessToken == null || refreshToken == null) {
+      throw Exception('Session tokens missing from server response');
+    }
+
+    return _client.auth.setSession(refreshToken);
   }
 
   // ─── Google Sign-In (Native) ──────────────────────────────────────────────
