@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -22,8 +25,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
+  // ── Greeting carousel ──────────────────────────────────────────────────
+  static const _greetings = [
+    'Namaste',
+    'Hello',
+    'नमस्ते',
+    'നമസ്കാരം',
+    'வணக்கம்',
+  ];
+  int _greetingIndex = 0;
+  Timer? _greetingTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _greetingTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+      if (mounted) {
+        setState(() {
+          _greetingIndex = (_greetingIndex + 1) % _greetings.length;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _greetingTimer?.cancel();
     _phoneController.dispose();
     super.dispose();
   }
@@ -125,7 +152,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       Expanded(
                         child: Text(
-                          AppConstants.appName,
+                          'DG Partner',
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -189,23 +216,53 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                 const Gap(28),
 
-                // ─── Welcome Text ─────────────────────────────────────────
-                Text(
-                  'Welcome Back',
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1.0,
-                        fontSize: 32,
-                      ),
-                )
-                    .animate()
-                    .fadeIn(delay: 250.ms, duration: 400.ms)
-                    .slideY(begin: 0.2, end: 0),
+                // ─── Welcome Text (carousel) ──────────────────────────────
+                SizedBox(
+                  height: 52,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    transitionBuilder: (child, animation) {
+                      // Determine if this is the entering or exiting child
+                      final isEntering = child.key == ValueKey(_greetingIndex);
+                      if (isEntering) {
+                        // Enter: slide up + fade in
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0, 0.5),
+                              end: Offset.zero,
+                            ).animate(CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeOutCubic,
+                            )),
+                            child: child,
+                          ),
+                        );
+                      } else {
+                        // Exit: just fade out in place
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      }
+                    },
+                    child: Text(
+                      _greetings[_greetingIndex],
+                      key: ValueKey(_greetingIndex),
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
+                            fontSize: 32,
+                          ),
+                    ),
+                  ),
+                ),
 
                 const Gap(8),
 
                 Text(
-                  'Manage your properties and clients with ease.\nPlease enter your details to continue.',
+                  'Manage, Connect & Grow.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: isDark
@@ -356,6 +413,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           AppConstants.googleLogoImage,
                           width: 22,
                           height: 22,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.g_mobiledata_rounded,
+                            size: 24,
+                            color: Color(0xFF4285F4),
+                          ),
                         ),
                         onTap: _signInWithGoogle,
                       ),
@@ -413,21 +475,45 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     text: 'By continuing, you agree to our\n',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: isDark
-                              ? AppColors.textSecondaryDark.withOpacity(0.6)
-                              : AppColors.textSecondaryLight.withOpacity(0.6),
+                              ? AppColors.textSecondaryDark.withValues(alpha: 0.6)
+                              : AppColors.textSecondaryLight.withValues(alpha: 0.6),
                         ),
                     children: [
-                      TextSpan(
-                        text: 'Terms of Service',
-                        style: const TextStyle(
-                          decoration: TextDecoration.underline,
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: GestureDetector(
+                          onTap: () => launchUrl(
+                            Uri.parse('https://devgruha.com/terms'),
+                            mode: LaunchMode.externalApplication,
+                          ),
+                          child: Text(
+                            'Terms of Service',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppColors.primary,
+                                ),
+                          ),
                         ),
                       ),
-                      const TextSpan(text: ' and '),
-                      TextSpan(
-                        text: 'Privacy Policy',
-                        style: const TextStyle(
-                          decoration: TextDecoration.underline,
+                      const TextSpan(text: '  and  '),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: GestureDetector(
+                          onTap: () => launchUrl(
+                            Uri.parse('https://devgruha.com/privacy'),
+                            mode: LaunchMode.externalApplication,
+                          ),
+                          child: Text(
+                            'Privacy Policy',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppColors.primary,
+                                ),
+                          ),
                         ),
                       ),
                     ],

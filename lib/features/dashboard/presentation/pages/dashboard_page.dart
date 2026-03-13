@@ -814,7 +814,8 @@ class _BottomNav extends StatelessWidget {
                   icon: Icons.more_horiz_rounded,
                   label: 'More',
                   active: false,
-                  isDark: isDark),
+                  isDark: isDark,
+                  onTap: () => context.go(AppConstants.settingsRoute)),
             ],
           ),
         ),
@@ -828,12 +829,14 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool active;
   final bool isDark;
+  final VoidCallback? onTap;
 
   const _NavItem({
     required this.icon,
     required this.label,
     required this.active,
     required this.isDark,
+    this.onTap,
   });
 
   @override
@@ -843,7 +846,7 @@ class _NavItem extends StatelessWidget {
         : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight);
 
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

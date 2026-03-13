@@ -44,4 +44,5 @@ class AppConstants {
   static const String otpRoute = '/otp';
   static const String dashboardRoute = '/dashboard';
   static const String registerRoute = '/register';
+  static const String settingsRoute = '/settings';
 }
