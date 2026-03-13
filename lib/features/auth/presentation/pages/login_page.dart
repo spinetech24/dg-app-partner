@@ -25,32 +25,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  // ── Greeting carousel ──────────────────────────────────────────────────
-  static const _greetings = [
-    'Namaste',
-    'Hello',
-    'नमस्ते',
-    'നമസ്കാരം',
-    'வணக்கம்',
-  ];
-  int _greetingIndex = 0;
-  Timer? _greetingTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    _greetingTimer = Timer.periodic(const Duration(seconds: 2), (_) {
-      if (mounted) {
-        setState(() {
-          _greetingIndex = (_greetingIndex + 1) % _greetings.length;
-        });
-      }
-    });
-  }
-
   @override
   void dispose() {
-    _greetingTimer?.cancel();
     _phoneController.dispose();
     super.dispose();
   }
@@ -184,30 +160,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.home_work_rounded,
-                            size: 40,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 )
                     .animate()
@@ -216,48 +168,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                 const Gap(28),
 
-                // ─── Welcome Text (carousel) ──────────────────────────────
-                SizedBox(
-                  height: 52,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    transitionBuilder: (child, animation) {
-                      // Determine if this is the entering or exiting child
-                      final isEntering = child.key == ValueKey(_greetingIndex);
-                      if (isEntering) {
-                        // Enter: slide up + fade in
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0, 0.5),
-                              end: Offset.zero,
-                            ).animate(CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.easeOutCubic,
-                            )),
-                            child: child,
-                          ),
-                        );
-                      } else {
-                        // Exit: just fade out in place
-                        return FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        );
-                      }
-                    },
-                    child: Text(
-                      _greetings[_greetingIndex],
-                      key: ValueKey(_greetingIndex),
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.5,
-                            fontSize: 32,
-                          ),
-                    ),
-                  ),
-                ),
+                // ─── Welcome Text ──────────────────────────────
+                Text(
+                  'Namaste',
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1.0,
+                        fontSize: 32,
+                      ),
+                )
+                    .animate()
+                    .fadeIn(delay: 250.ms, duration: 400.ms)
+                    .slideY(begin: 0.2, end: 0),
 
                 const Gap(8),
 
