@@ -29,8 +29,9 @@ class AuthService {
   // ─── Google Sign-In (Native) ──────────────────────────────────────────────
 
   Future<AuthResponse?> signInWithGoogle() async {
+    // For Android, we only need the serverClientId (Web Client ID) to get the idToken for Supabase.
+    // Specifying an Android clientId often leads to ApiException 10 if there are SHA-1 mismatches.
     final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: AppConstants.googleAndroidClientId,
       serverClientId: AppConstants.googleWebClientId,
     );
 

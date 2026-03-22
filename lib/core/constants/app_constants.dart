@@ -20,6 +20,8 @@ class AppConstants {
   // Assets
   static const String loginHeroImage = 'assets/images/login_hero.png';
   static const String googleLogoImage = 'assets/images/google_logo.png';
+  static const String dgLogoImage = 'assets/images/dg_logo.png';
+
 
   // Phone
   static const String defaultCountryCode = '+91';
