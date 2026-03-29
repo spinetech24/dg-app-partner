@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DevGruha Saathi</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="welcome_title">Welcome to DG Partner Platform</string>
+    <string name="welcome_subtitle">Before we set up your organization, let\'s confirm your personal details.</string>
+    <string name="first_name_label">First Name</string>
+    <string name="last_name_label">Last Name</string>
+    <string name="email_address_label">Email Address</string>
+    <string name="continue_button">Continue</string>
+    <string name="organization_step">Organization</string>
+    <string name="entity_type_step">Entity Type</string>
+    <string name="details_step">Details</string>
+</resources>

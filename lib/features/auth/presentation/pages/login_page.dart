@@ -11,7 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../providers/auth_providers.dart';
-import '../widgets/social_auth_button.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -89,333 +88,422 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: AppColors.navyBlue,
+        body: Column(
+          children: [
+            // ── Navy Hero Section ──────────────────────────────────────────
+            Expanded(
+              flex: 5,
+              child: _HeroSection(),
+            ),
 
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // ─── Top Bar ──────────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 8),
-                  child: Row(
-                    children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(50),
-                          onTap: () => Navigator.maybePop(context),
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.primary.withOpacity(0.1),
-                            ),
-                            child: Icon(
-                              Icons.arrow_back,
-                              color: isDark
-                                  ? AppColors.textPrimaryDark
-                                  : AppColors.textPrimaryLight,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          'DG Partner',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      const SizedBox(width: 40),
-                    ],
-                  ),
-                )
-                    .animate()
-                    .fadeIn(duration: 400.ms)
-                    .slideY(begin: -0.2, end: 0),
+            // ── White Card Section ─────────────────────────────────────────
+            Expanded(
+              flex: 6,
+              child: _FormCard(
+                formKey: _formKey,
+                phoneController: _phoneController,
+                isLoading: _isLoading,
+                onSendOtp: _sendOtp,
+                onGoogle: _signInWithGoogle,
+                onApple: _signInWithApple,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-                const Gap(8),
+// ─── Hero (navy top section) ─────────────────────────────────────────────────
 
-                // ─── Hero Banner ──────────────────────────────────────────
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+class _HeroSection extends StatelessWidget {
+  const _HeroSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.navyBlue, AppColors.navyBlueDark],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Back button
+              Align(
+                alignment: Alignment.centerLeft,
+                child: GestureDetector(
+                  onTap: () => Navigator.maybePop(context),
                   child: Container(
-                    height: 200,
-                    width: double.infinity,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(16),
-                      image: const DecorationImage(
-                        image: AssetImage(AppConstants.loginHeroImage),
-                        fit: BoxFit.cover,
-                      ),
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.15),
                     ),
-                  ),
-                )
-                    .animate()
-                    .fadeIn(delay: 150.ms, duration: 500.ms)
-                    .scale(begin: const Offset(0.95, 0.95)),
-
-                const Gap(28),
-
-                // ─── Welcome Text ──────────────────────────────
-                Text(
-                  'Namaste',
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1.0,
-                        fontSize: 32,
-                      ),
-                )
-                    .animate()
-                    .fadeIn(delay: 250.ms, duration: 400.ms)
-                    .slideY(begin: 0.2, end: 0),
-
-                const Gap(8),
-
-                Text(
-                  'Manage, Connect & Grow.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDark
-                            ? AppColors.textSecondaryDark
-                            : AppColors.textSecondaryLight,
-                        height: 1.5,
-                      ),
-                )
-                    .animate()
-                    .fadeIn(delay: 300.ms, duration: 400.ms),
-
-                const Gap(28),
-
-                // ─── Phone Input ──────────────────────────────────────────
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Mobile Number',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ),
-                const Gap(8),
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(10),
-                  ],
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  decoration: InputDecoration(
-                    hintText: '00000 00000',
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 8),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '+91',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              color: isDark
-                                  ? AppColors.textSecondaryDark
-                                  : AppColors.textSecondaryLight,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            width: 1,
-                            height: 20,
-                            color: isDark
-                                ? AppColors.borderDark
-                                : AppColors.borderLight,
-                          ),
-                        ],
-                      ),
-                    ),
-                    prefixIconConstraints:
-                        const BoxConstraints(minWidth: 0, minHeight: 0),
+              ).animate().fadeIn(duration: 300.ms),
+
+              const Gap(12),
+
+              // DG circular logo
+              _DgLogo()
+                  .animate()
+                  .fadeIn(delay: 150.ms, duration: 500.ms)
+                  .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1)),
+
+              const Gap(16),
+
+              // DEVGRUHA label
+              Text(
+                'DEVGRUHA',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.85),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 3,
+                ),
+              ).animate().fadeIn(delay: 280.ms),
+
+              const Gap(4),
+
+              // Saathi headline
+              const Text(
+                'Saathi',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
+                  height: 1.1,
+                ),
+              ).animate().fadeIn(delay: 320.ms).slideY(begin: 0.2, end: 0),
+
+              const Gap(6),
+
+              // Subtitle
+              Text(
+                'Your Trusted Partner in Devotion',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                ),
+              ).animate().fadeIn(delay: 380.ms),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── DG Logo ─────────────────────────────────────────────────────────────────
+
+class _DgLogo extends StatelessWidget {
+  const _DgLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 96,
+      height: 96,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.navyBlueDark.withOpacity(0.5),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: Image.asset(
+          AppConstants.dgLogoImage,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: Center(
+              child: Container(
+                width: 76,
+                height: 76,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [AppColors.navyBlueLight, AppColors.navyBlue],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your mobile number';
-                    }
-                    if (value.length != 10) {
-                      return 'Enter a valid 10-digit mobile number';
-                    }
-                    return null;
-                  },
-                )
-                    .animate()
-                    .fadeIn(delay: 350.ms, duration: 400.ms)
-                    .slideY(begin: 0.2, end: 0),
+                ),
+                child: const Center(
+                  child: Text(
+                    'DG',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-                const Gap(16),
+// ─── White Form Card ──────────────────────────────────────────────────────────
 
-                // ─── Send OTP Button ──────────────────────────────────────
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: _isLoading
-                      ? Container(
-                          height: 56,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
+class _FormCard extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController phoneController;
+  final bool isLoading;
+  final VoidCallback onSendOtp;
+  final VoidCallback onGoogle;
+  final VoidCallback onApple;
+
+  const _FormCard({
+    required this.formKey,
+    required this.phoneController,
+    required this.isLoading,
+    required this.onSendOtp,
+    required this.onGoogle,
+    required this.onApple,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: AppColors.offWhite,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ── Mobile Number Label ──────────────────────────────────────
+              const Text(
+                'MOBILE NUMBER',
+                style: TextStyle(
+                  color: AppColors.textSecondaryLight,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ).animate().fadeIn(delay: 300.ms),
+
+              const Gap(8),
+
+              // ── Phone Input ──────────────────────────────────────────────
+              TextFormField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                style: const TextStyle(
+                  color: AppColors.charcoal,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 1,
+                ),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: '00000 00000',
+                  hintStyle: const TextStyle(
+                    color: AppColors.lightGrey,
+                    fontSize: 16,
+                    letterSpacing: 1,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.borderLight),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.borderLight),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.navyBlue, width: 2),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.error),
+                  ),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 14, right: 10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Indian flag emoji + code
+                        const Text('🇮🇳', style: TextStyle(fontSize: 18)),
+                        const Gap(6),
+                        const Text(
+                          '+91',
+                          style: TextStyle(
+                            color: AppColors.charcoal,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Gap(10),
+                        Container(
+                          width: 1,
+                          height: 20,
+                          color: AppColors.borderLight,
+                        ),
+                      ],
+                    ),
+                  ),
+                  prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your mobile number';
+                  }
+                  if (value.length != 10) {
+                    return 'Enter a valid 10-digit mobile number';
+                  }
+                  return null;
+                },
+              ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.15, end: 0),
+
+              const Gap(16),
+
+              // ── Send OTP Button ──────────────────────────────────────────
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: isLoading
+                    ? Container(
+                        key: const ValueKey('loading'),
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: AppColors.navyBlue,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            strokeWidth: 2.5,
+                          ),
+                        ),
+                      )
+                    : ElevatedButton(
+                        key: const ValueKey('sendOtp'),
+                        onPressed: onSendOtp,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.navyBlue,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size.fromHeight(52),
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.black54),
-                              strokeWidth: 2.5,
-                            ),
-                          ),
-                        )
-                      : ElevatedButton(
-                          onPressed: _sendOtp,
-                          child: const Text('Send OTP'),
-                        ),
-                )
-                    .animate()
-                    .fadeIn(delay: 400.ms, duration: 400.ms),
-
-                const Gap(32),
-
-                // ─── Or Divider ───────────────────────────────────────────
-                Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: isDark ? AppColors.borderDark : AppColors.borderLight,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        'Or continue with',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: isDark
-                                  ? AppColors.textSecondaryDark
-                                  : AppColors.textSecondaryLight,
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: isDark ? AppColors.borderDark : AppColors.borderLight,
-                      ),
-                    ),
-                  ],
-                )
-                    .animate()
-                    .fadeIn(delay: 450.ms, duration: 400.ms),
-
-                const Gap(20),
-
-                // ─── Social Auth ──────────────────────────────────────────
-                Row(
-                  children: [
-                    Expanded(
-                      child: SocialAuthButton(
-                        label: 'Google',
-                        iconWidget: Image.asset(
-                          AppConstants.googleLogoImage,
-                          width: 22,
-                          height: 22,
-                          errorBuilder: (_, __, ___) => const Icon(
-                            Icons.g_mobiledata_rounded,
-                            size: 24,
-                            color: Color(0xFF4285F4),
+                          elevation: 0,
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            letterSpacing: 1.2,
                           ),
                         ),
-                        onTap: _signInWithGoogle,
+                        child: const Text('SEND OTP'),
                       ),
-                    ),
-                    const Gap(16),
-                    Expanded(
-                      child: SocialAuthButton(
-                        label: 'Apple',
-                        iconWidget: const Icon(Icons.apple, size: 24),
-                        onTap: _signInWithApple,
-                      ),
-                    ),
-                  ],
-                )
-                    .animate()
-                    .fadeIn(delay: 500.ms, duration: 400.ms),
+              ).animate().fadeIn(delay: 400.ms),
 
-                const Gap(28),
+              const Gap(20),
 
-                // ─── Register Link ────────────────────────────────────────
-                RichText(
+              // ── Register Link ────────────────────────────────────────────
+              Center(
+                child: RichText(
                   text: TextSpan(
                     text: "Don't have an account? ",
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: isDark
-                              ? AppColors.textSecondaryDark
-                              : AppColors.textSecondaryLight,
-                        ),
+                    style: const TextStyle(
+                      color: AppColors.textSecondaryLight,
+                      fontSize: 13,
+                    ),
                     children: [
                       WidgetSpan(
                         child: GestureDetector(
                           onTap: () {
                             // TODO: navigate to register
                           },
-                          child: Text(
+                          child: const Text(
                             'Register as Partner',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: TextStyle(
+                              color: AppColors.navyBlue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                )
-                    .animate()
-                    .fadeIn(delay: 550.ms, duration: 400.ms),
+                ),
+              ).animate().fadeIn(delay: 450.ms),
 
-                const Gap(32),
+              const Gap(28),
 
-                // ─── Terms ────────────────────────────────────────────────
-                Text.rich(
+              // ── Terms ────────────────────────────────────────────────────
+              Center(
+                child: Text.rich(
                   TextSpan(
                     text: 'By continuing, you agree to our\n',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: isDark
-                              ? AppColors.textSecondaryDark.withValues(alpha: 0.6)
-                              : AppColors.textSecondaryLight.withValues(alpha: 0.6),
-                        ),
+                    style: TextStyle(
+                      color: AppColors.textSecondaryLight.withOpacity(0.7),
+                      fontSize: 11,
+                      height: 1.6,
+                    ),
                     children: [
                       WidgetSpan(
                         alignment: PlaceholderAlignment.middle,
                         child: GestureDetector(
                           onTap: () => launchUrl(
                             Uri.parse('https://devgruha.com/terms'),
-                            mode: LaunchMode.externalApplication,
+                            mode: LaunchMode.inAppBrowserView,
                           ),
-                          child: Text(
+                          child: const Text(
                             'Terms of Service',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w600,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: AppColors.primary,
-                                ),
+                            style: TextStyle(
+                              color: AppColors.navyBlue,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.navyBlue,
+                            ),
                           ),
                         ),
                       ),
@@ -425,29 +513,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         child: GestureDetector(
                           onTap: () => launchUrl(
                             Uri.parse('https://devgruha.com/privacy'),
-                            mode: LaunchMode.externalApplication,
+                            mode: LaunchMode.inAppBrowserView,
                           ),
-                          child: Text(
+                          child: const Text(
                             'Privacy Policy',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w600,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: AppColors.primary,
-                                ),
+                            style: TextStyle(
+                              color: AppColors.navyBlue,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.navyBlue,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                   textAlign: TextAlign.center,
-                )
-                    .animate()
-                    .fadeIn(delay: 600.ms, duration: 400.ms),
-
-                const Gap(32),
-              ],
-            ),
+                ),
+              ).animate().fadeIn(delay: 500.ms),
+            ],
           ),
         ),
       ),

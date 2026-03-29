@@ -35,60 +35,95 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.navyBlue,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // DG circular logo
             Container(
-              width: 90,
-              height: 90,
+              width: 110,
+              height: 110,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
+                shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    color: AppColors.navyBlueDark.withOpacity(0.6),
+                    blurRadius: 32,
+                    offset: const Offset(0, 12),
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.home_work_rounded,
-                size: 48,
-                color: AppColors.primary,
+              child: ClipOval(
+                child: Image.asset(
+                  AppConstants.dgLogoImage,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'DG',
+                        style: TextStyle(
+                          color: AppColors.navyBlue,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             )
                 .animate()
                 .fadeIn(duration: 600.ms)
                 .scale(begin: const Offset(0.8, 0.8)),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             Text(
-              AppConstants.appName,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5,
-                  ),
+              'DEVGRUHA',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 3,
+              ),
+            )
+                .animate()
+                .fadeIn(delay: 250.ms, duration: 400.ms),
+            const SizedBox(height: 4),
+            const Text(
+              'Saathi',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.5,
+              ),
             )
                 .animate()
                 .fadeIn(delay: 300.ms, duration: 500.ms)
                 .slideY(begin: 0.3, end: 0),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
-              'Partner Portal',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  ),
+              'Your Trusted Partner in Devotion',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.6),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+              ),
             )
                 .animate()
-                .fadeIn(delay: 500.ms, duration: 500.ms),
+                .fadeIn(delay: 450.ms, duration: 500.ms),
             const SizedBox(height: 60),
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              strokeWidth: 2.5,
+            const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white54),
+                strokeWidth: 2,
+              ),
             )
                 .animate()
                 .fadeIn(delay: 800.ms),

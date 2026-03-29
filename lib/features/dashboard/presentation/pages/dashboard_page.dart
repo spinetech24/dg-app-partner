@@ -47,7 +47,7 @@ class DashboardPage extends ConsumerWidget {
                     const Gap(16),
 
                     // ─── Stats Row ────────────────────────────────────────
-                    Row(
+                    const Row(
                       children: [
                         Expanded(
                           child: _StatCard(
@@ -56,11 +56,11 @@ class DashboardPage extends ConsumerWidget {
                             trend: '+15% from yesterday',
                             trendUp: true,
                             icon: Icons.calendar_today_rounded,
-                            color: const Color(0xFF6366F1),
+                            color: Color(0xFF6366F1),
                             delay: 150,
                           ),
                         ),
-                        const Gap(12),
+                        Gap(12),
                         Expanded(
                           child: _StatCard(
                             label: 'Revenue',
@@ -75,7 +75,7 @@ class DashboardPage extends ConsumerWidget {
                       ],
                     ),
                     const Gap(12),
-                    SizedBox(
+                    const SizedBox(
                       height: 80,
                       child: _StatCard(
                         label: 'Active Members',
@@ -83,7 +83,7 @@ class DashboardPage extends ConsumerWidget {
                         trend: '+2% new users',
                         trendUp: true,
                         icon: Icons.groups_rounded,
-                        color: AppColors.primary,
+                        color: AppColors.navyBlue,
                         delay: 250,
                         wide: true,
                       ),
@@ -187,14 +187,14 @@ class _Header extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 16, 20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
+          colors: [AppColors.navyBlueLight, AppColors.navyBlue],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.35),
+            color: AppColors.navyBlueDark.withOpacity(0.40),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -221,9 +221,9 @@ class _Header extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       AppConstants.appName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -842,7 +842,7 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = active
-        ? AppColors.primary
+        ? AppColors.amber
         : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight);
 
     return GestureDetector(
@@ -854,7 +854,7 @@ class _NavItem extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             decoration: BoxDecoration(
-              color: active ? AppColors.primary.withOpacity(0.12) : null,
+              color: active ? AppColors.amber.withOpacity(0.15) : null,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(icon, color: color, size: 24),

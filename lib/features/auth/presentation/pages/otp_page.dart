@@ -103,10 +103,10 @@ class _OtpPageState extends ConsumerState<OtpPage> {
 
     final focusedPinTheme = defaultPinTheme.copyWith(
       decoration: defaultPinTheme.decoration!.copyWith(
-        border: Border.all(color: AppColors.primary, width: 2),
+        border: Border.all(color: AppColors.navyBlue, width: 2),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.15),
+            color: AppColors.navyBlue.withOpacity(0.15),
             blurRadius: 8,
             spreadRadius: 1,
           ),
@@ -133,13 +133,13 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.12),
+                  color: AppColors.navyBlue.withOpacity(0.10),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.sms_rounded,
                   size: 40,
-                  color: AppColors.primary,
+                  color: AppColors.navyBlue,
                 ),
               )
                   .animate()
@@ -190,7 +190,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
 
               if (_isVerifying)
                 const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(AppColors.primary),
+                  valueColor: AlwaysStoppedAnimation(AppColors.navyBlue),
                 )
               else
                 ElevatedButton(
@@ -220,7 +220,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                               ? (isDark
                                   ? AppColors.textSecondaryDark
                                   : AppColors.textSecondaryLight)
-                              : AppColors.primary,
+                              : AppColors.navyBlue,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
